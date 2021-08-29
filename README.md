@@ -3,8 +3,9 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/FlowChart.png">
 
-<img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SR.png" height="200"> <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png" height="200">      <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SCLoss.png" height="200">
+<img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SR.png" height="200"> <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png" height="200">
+<img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SCLoss.png" height="200">
 
-<img src="https://github.com/ggsDing/Bi-SRNet/blob/main/Loss_forward.png" height="300">
+<img src="https://github.com/ggsDing/Bi-SRNet/blob/main/Loss_forward.png" height="200">
 
 Training codes will be made available soon
