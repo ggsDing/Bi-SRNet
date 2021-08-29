@@ -227,7 +227,7 @@ class BiSRNet(nn.Module):
         x = self.FCN.layer3(x) #size:1/16
         x = self.FCN.layer4(x)
         x = self.head(x)
-        x = self.SR(x)
+        x = self.SiamSR(x)
         
         return x
     
