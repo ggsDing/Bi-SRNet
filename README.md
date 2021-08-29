@@ -3,8 +3,8 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 
 ![alt text](https://github.com/ggsDing/Bi-SRNet/blob/main/FlowChart.png)
 
-![alt text](https://github.com/ggsDing/Bi-SRNet/blob/main/SR.png | height=5)
-![alt text](https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png | height=5)
+![](https://github.com/ggsDing/Bi-SRNet/blob/main/SR.png | width=10)
+![](https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png | width=20)
 
 ![alt text](https://github.com/ggsDing/Bi-SRNet/blob/main/SCLoss.png)
 ![alt text](https://github.com/ggsDing/Bi-SRNet/blob/main/Loss_forward.png)
