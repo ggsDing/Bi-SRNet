@@ -3,7 +3,7 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 
 <figure class="image">
   <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/FlowChart.png">
-  <figcaption>{{ Network Architecture }}</figcaption>
+  <figcaption>{Network Architecture}</figcaption>
 </figure>
 
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SR.png" height="300"> <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png" height="300">
