@@ -6,7 +6,6 @@ import numpy as np
 import cv2
 import skimage
 from skimage import transform as sktransf
-from skimage.util import pad
 import matplotlib.pyplot as plt
 
 def showIMG(img):
@@ -337,49 +336,6 @@ def five_crop(ims, labels, size):
     print('Five crop finished. %d images created.' %len(crop_imgs))
     return crop_imgs, crop_labels
 
-def data_padding(imgs, labels, scale=32):
-    for idx, img in enumerate(imgs):
-        label = labels[idx]
-        shape_before = img.shape
-        h, w = img.shape[:2]
-        h_padding = h%scale
-        w_padding = w%scale
-        need_padding = h_padding>0 and w_padding>0
-        if need_padding:
-            h_padding = (scale-h_padding)/2
-            h_padding1 = math.ceil(h_padding)
-            h_padding2 = math.floor(h_padding)
-            
-            w_padding = (scale-w_padding)/2
-            w_padding1 = math.ceil(w_padding)
-            w_padding2 = math.floor(w_padding)
-            img = pad(img, ((h_padding1, h_padding2), (w_padding1, w_padding2), (0,0)), 'symmetric')
-            label = pad(label, ((h_padding1, h_padding2), (w_padding1, w_padding2), (0,0)), 'constant')
-            shape_after = img.shape
-            print('img padding: [%d, %d]->[%d, %d]'%(shape_before[0],shape_before[1],shape_after[0],shape_after[1]))
-            imgs[idx] = img
-            labels[idx] = label
-    return imgs, labels
-    
-def data_padding_fixsize(imgs, labels, size):
-    for idx, img in enumerate(imgs):
-        label = labels[idx]
-        h, w = img.shape[:2]
-        h_padding = size[0]
-        w_padding = size[1]
-        
-        h_padding1 = math.ceil(h_padding)
-        h_padding2 = math.floor(h_padding)
-                
-        w_padding1 = math.ceil(w_padding)
-        w_padding2 = math.floor(w_padding)
-        
-        img = pad(img, ((h_padding1, h_padding2), (w_padding1, w_padding2), (0,0)), 'symmetric')
-        label = pad(label, ((h_padding1, h_padding2), (w_padding1, w_padding2)), 'constant')
-        imgs[idx] = img
-        labels[idx] = label
-    return imgs, labels
-
 def five_crop_mix(ims, labels, x_s, size, scale=8):
     crop_imgs = []
     crop_labels = []
@@ -524,37 +480,6 @@ def random_crop_MCD(img1, img2, label1, label2, size):
         crop_label2 = label2[s_h:e_h, s_w:e_w]
         # print('%d %d %d %d'%(s_h, e_h, s_w, e_w))
         return crop_im1, crop_im2, crop_label1, crop_label2
-
-def random_crop_2s(img_s, label_s, img, label, crop_size_global, crop_size_local, scale):
-    # print(img.shape)
-    h_s, w_s = img_s.shape[:2]
-    h, w = img.shape[:2]
-    padding_size = int((crop_size_global-crop_size_local)/scale)
-    crop_size_s = int(crop_size_global/scale)
-    
-    if h_s < crop_size_s or w_s < crop_size_s or h < crop_size_local or w < crop_size_local:
-        print('Crop failed. Size error.')
-    else:
-        h_seed = random.randint(0, h_s-crop_size_s)
-        w_seed = random.randint(0, w_s-crop_size_s)
-        
-        start_h_s = h_seed
-        end_h_s = start_h_s+crop_size_s
-        start_w_s = w_seed
-        end_w_s = start_w_s+crop_size_s        
-        crop_im_s = img_s[start_h_s:end_h_s, start_w_s:end_w_s, :]
-        crop_label_s = label_s[start_h_s:end_h_s, start_w_s:end_w_s]
-        #print('start_h_s%d, end_h_s%d, start_w_s%d, end_w_s%d'%(start_h_s,end_h_s,start_w_s,end_w_s))
-        
-        start_h = h_seed*scale
-        end_h = start_h+crop_size_local
-        start_w = w_seed*scale
-        end_w = start_w+crop_size_local
-        #print('start_h%d, end_h%d, start_w%d, end_w%d'%(start_h,end_h,start_w,end_w))
-        crop_im = img[start_h:end_h, start_w:end_w, :]
-        crop_label = label[start_h:end_h, start_w:end_w]
-        
-        return crop_im_s, crop_label_s, crop_im, crop_label
 
 def random_crop_mix(img, label, x_s, size, scale=8):
     # print(img.shape)
