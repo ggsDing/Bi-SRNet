@@ -117,8 +117,8 @@ class ChangeSimilarity(nn.Module):
         
     def forward(self, x1, x2, label_change):
         b,c,h,w = x1.size()
-        #x1 = F.softmax(x1, dim=1)
-        #x2 = F.softmax(x2, dim=1)
+        x1 = F.softmax(x1, dim=1)
+        x2 = F.softmax(x2, dim=1)
         x1 = x1.permute(0,2,3,1)
         x2 = x2.permute(0,2,3,1)
         x1 = torch.reshape(x1,[b*h*w,c])
