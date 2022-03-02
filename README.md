@@ -11,12 +11,12 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 1. Split the SECOND data into training, validation (and testing if available) set and organize them as follows:
 
 >- YOUR_DATA_DIR
-> - Train
->  - image
->  - labels
+>  - Train
+>    - image
+>    - labels
 > - Val
->  - image
->  - labels
+>   - image
+>   - labels
     
 2. Set the data path as YOUR_DATA_DIR at *dataset -RS_ST.py*
 
