@@ -28,5 +28,6 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
     
 2. Find *-datasets -RS_ST.py*, set the data root in *Line 22* as *YOUR_DATA_DIR*
 
+**Reference**
 If you find our work useful or interesting, please consider to cite:
 > Ding L, Guo H, Liu S, et al. Bi-temporal semantic reasoning for the semantic change detection in hr remote sensing images[J]. IEEE Transactions on Geoscience and Remote Sensing, 2022.
