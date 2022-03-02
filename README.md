@@ -14,9 +14,9 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 >  - Train
 >    - image
 >    - labels
-> - Val
->   - image
->   - labels
+>  - Val
+>    - image
+>    - labels
     
 2. Set the data path as YOUR_DATA_DIR at *dataset -RS_ST.py*
 
