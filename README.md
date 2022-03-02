@@ -8,15 +8,24 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SCLoss.png" height="200">
 
 **Data preparation:**
-1. Split the SECOND data into training, validation (and testing if available) set and organize them as follows:
+1. Split the SCD data into training, validation and testing (if available) set and organize them as follows:
 
 >YOUR_DATA_DIR
 >  - Train
->    - image
->    - labels
+>    - im1
+>    - im2
+>    - label1
+>    - label2
 >  - Val
->    - image
->    - labels
+>    - im1
+>    - im2
+>    - label1
+>    - label2
+>  - Test
+>    - im1
+>    - im2
+>    - label1
+>    - label2
     
 2. Find *-datasets -RS_ST.py*, set the data root in *Line 22* as *YOUR_DATA_DIR*
 
