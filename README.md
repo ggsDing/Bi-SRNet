@@ -10,7 +10,7 @@ Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detecti
 **Data preparation**
 1. Split the SECOND data into training, validation (and testing if available) set and organize them as follows:
 
->- YOUR_DATA_DIR
+>YOUR_DATA_DIR
 >  - Train
 >    - image
 >    - labels
