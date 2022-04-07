@@ -21,7 +21,7 @@ class PredOptions():
     def initialize(self, parser):
         working_path = os.path.dirname(os.path.abspath(__file__))
         parser.add_argument('--pred_batch_size', required=False, default=1, help='prediction batch size')
-        parser.add_argument('--test_dir', required=False, default='/TESt_DIR/', help='directory to test images')
+        parser.add_argument('--test_dir', required=False, default='/TEST_DIR/', help='directory to test images')
         parser.add_argument('--pred_dir', required=False, default='/PRED_DIR/'+DATA_DIR, help='directory to output masks')
         parser.add_argument('--chkpt_path', required=False, default=working_path+'/checkpoints/ST/xxx.pth')
         self.initialized = True
@@ -61,11 +61,13 @@ def main():
     
     test_set = RS.Data_test(opt.test_dir)
     test_loader = DataLoader(test_set, batch_size=opt.pred_batch_size)
-    predict(net, test_set, test_loader, opt.pred_dir, flip=False, index_map=True, intermediate=False)
+    predict(net, test_set, test_loader, opt.pred_dir, flip=False, index_map=True, intermediate=False)    
     #predict_direct(net, test_set, test_loader, opt.pred_dir, flip=False, index_map=True)
     time_use = time.time() - begin_time
     print('Total time: %.2fs'%time_use)
 
+#For models with 3 outputs: 1 change map + 2 semantic maps.
+#Parameters: flip->test time augmentation     index_map->"False" means rgb results      intermediate->whether to outputs the intermediate maps
 def predict(net, pred_set, pred_loader, pred_dir, flip=False, index_map=False, intermediate=False):
     pred_A_dir_rgb = os.path.join(pred_dir, 'im1_rgb')
     pred_B_dir_rgb = os.path.join(pred_dir, 'im2_rgb')
@@ -156,6 +158,8 @@ def predict(net, pred_set, pred_loader, pred_dir, flip=False, index_map=False, i
             io.imsave(pred_A_path, pred_A.astype(np.uint8))
             io.imsave(pred_B_path, pred_B.astype(np.uint8))  
 
+#For models that directly produce 2 SCD maps.
+#Parameters: flip->test time augmentation     index_map->"False" means rgb results
 def predict_direct(net, pred_set, pred_loader, pred_dir, flip=False, index_map=False,):
     pred_A_dir_rgb = os.path.join(pred_dir, 'im1_rgb')
     pred_B_dir_rgb = os.path.join(pred_dir, 'im2_rgb')
