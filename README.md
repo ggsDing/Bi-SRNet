@@ -2,10 +2,12 @@
 Pytorch codes of 'Bi-Temporal Semantic Reasoning for the Semantic Change Detection in HR Remote Sensing Images' [[paper]](https://ieeexplore.ieee.org/document/9721305)
 
 
+<p align="center">
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/FlowChart.png">
 
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/SCLoss.png" width="700">
 <img src="https://github.com/ggsDing/Bi-SRNet/blob/main/BiSR.png" width="500">
+</p>
 
 **Data preparation:**
 1. Split the SCD data into training, validation and testing (if available) set and organize them as follows:
