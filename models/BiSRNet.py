@@ -77,32 +77,6 @@ class ResBlock(nn.Module):
 
         return out
 
-class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, n_filters):
-        super(DecoderBlock,self).__init__()
-
-        self.conv1 = nn.Conv2d(in_channels, in_channels // 4, 1)
-        self.norm1 = nn.BatchNorm2d(in_channels // 4)
-        self.relu = nn.ReLU()
-
-        self.deconv2 = nn.ConvTranspose2d(in_channels // 4, in_channels // 4, 3, stride=2, padding=1, output_padding=1)
-        self.norm2 = nn.BatchNorm2d(in_channels // 4)
-
-        self.conv3 = nn.Conv2d(in_channels // 4, n_filters, 1)
-        self.norm3 = nn.BatchNorm2d(n_filters)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.norm1(x)
-        x = self.relu(x)
-        x = self.deconv2(x)
-        x = self.norm2(x)
-        x = self.relu(x)
-        x = self.conv3(x)
-        x = self.norm3(x)
-        x = self.relu(x)
-        return x
-
 class SR(nn.Module):
     '''Spatial reasoning module'''
     #codes from DANet 'Dual attention network for scene segmentation'
@@ -193,15 +167,13 @@ class BiSRNet(nn.Module):
         self.FCN = FCN(in_channels, pretrained=True)
         self.SiamSR = SR(128)
         self.CotSR = CotSR(128)
-        self.head = nn.Sequential(nn.Conv2d(512, 128, kernel_size=1, stride=1, padding=0, bias=False),
-                                  nn.BatchNorm2d(128), nn.ReLU())
         
-        self.res1 = self._make_layer(ResBlock, 256, 128, 6, stride=1)
+        self.resCD = self._make_layer(ResBlock, 256, 128, 6, stride=1)
         self.classifier1 = nn.Conv2d(128, num_classes, kernel_size=1)
         self.classifier2 = nn.Conv2d(128, num_classes, kernel_size=1)
         
-        self.CD = nn.Sequential(nn.Conv2d(128, 64, kernel_size=1), nn.BatchNorm2d(64), nn.ReLU(), nn.Conv2d(64, 1, kernel_size=1))
-        initialize_weights(self.head, self.SiamSR, self.res1, self.CD, self.CotSR, self.classifier1, self.classifier2)
+        self.classifierCD = nn.Sequential(nn.Conv2d(128, 64, kernel_size=1), nn.BatchNorm2d(64), nn.ReLU(), nn.Conv2d(64, 1, kernel_size=1))
+        initialize_weights(self.head, self.SiamSR, self.resCD, self.CotSR, self.classifierCD, self.classifier1, self.classifier2)
     
     def _make_layer(self, block, inplanes, planes, blocks, stride=1):
         downsample = None
@@ -226,7 +198,7 @@ class BiSRNet(nn.Module):
         x = self.FCN.layer2(x) #size:1/8
         x = self.FCN.layer3(x) #size:1/16
         x = self.FCN.layer4(x)
-        x = self.head(x)
+        x = self.FCN.head(x)
         x = self.SiamSR(x)
         
         return x
@@ -234,8 +206,8 @@ class BiSRNet(nn.Module):
     def CD_forward(self, x1, x2):
         b,c,h,w = x1.size()
         x = torch.cat([x1,x2], 1)
-        x = self.res1(x)
-        change = self.CD(x)
+        x = self.resCD(x)
+        change = self.classifierCD(x)
         return change
     
     def forward(self, x1, x2):
