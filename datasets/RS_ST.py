@@ -69,6 +69,7 @@ def read_RSimages(mode, rescale=False):
     img_B_dir = os.path.join(root, mode, 'im2')
     label_A_dir = os.path.join(root, mode, 'label1')
     label_B_dir = os.path.join(root, mode, 'label2')
+    # To use rgb labels:
     #label_A_dir = os.path.join(root, mode, 'label1_rgb')
     #label_B_dir = os.path.join(root, mode, 'label2_rgb')
     
@@ -83,17 +84,18 @@ def read_RSimages(mode, rescale=False):
             label_A_path = os.path.join(label_A_dir, it)
             label_B_path = os.path.join(label_B_dir, it)
             
-            #print(img_B_path)
             imgs_list_A.append(img_A_path)
             imgs_list_B.append(img_B_path)
             
             label_A = io.imread(label_A_path)
-            label_B = io.imread(label_B_path)            
+            label_B = io.imread(label_B_path)
+            #for rgb labels:
+            #label_A = Color2Index(label_A)
+            #label_B = Color2Index(label_B)
             labels_A.append(label_A)
             labels_B.append(label_B)
         count+=1
         if not count%500: print('%d/%d images loaded.'%(count, len(data_list)))
-        #if count>100: break
     
     print(labels_A[0].shape)
     print(str(len(imgs_list_A)) + ' ' + mode + ' images' + ' loaded.')
