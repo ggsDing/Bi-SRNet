@@ -32,7 +32,6 @@ args = {
     'epochs': 50,
     'gpu': True,
     'lr_decay_power': 1.5,
-    'train_crop_size': False,
     'weight_decay': 5e-4,
     'momentum': 0.9,
     'print_freq': 50,
@@ -54,19 +53,19 @@ def main():
     #net.load_state_dict(torch.load(args['load_path']), strict=False)
         
     train_set = RS.Data('train', random_flip=True)
-    train_loader = DataLoader(train_set, batch_size=args['train_batch_size'], num_workers=8, shuffle=True)
+    train_loader = DataLoader(train_set, batch_size=args['train_batch_size'], num_workers=4, shuffle=True)
     val_set = RS.Data('val')
-    val_loader = DataLoader(val_set, batch_size=args['val_batch_size'], num_workers=8, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=args['val_batch_size'], num_workers=4, shuffle=False)
     
     criterion = CrossEntropyLoss2d(ignore_index=0).cuda()
     optimizer = optim.SGD(filter(lambda p: p.requires_grad, net.parameters()), lr=args['lr'], weight_decay=args['weight_decay'], momentum=args['momentum'], nesterov=True)
     scheduler = optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.95, last_epoch=-1)
 
-    train(train_loader, net, criterion, optimizer, scheduler, args, val_loader)
+    train(train_loader, net, criterion, optimizer, scheduler, val_loader)
     writer.close()
     print('Training finished.')
 
-def train(train_loader, net, criterion, optimizer, scheduler, train_args, val_loader):
+def train(train_loader, net, criterion, optimizer, scheduler, val_loader):
     bestaccT=0
     bestscoreV=0.0
     bestloss=1.0
@@ -89,7 +88,6 @@ def train(train_loader, net, criterion, optimizer, scheduler, train_args, val_lo
             running_iter = curr_iter+i+1
             adjust_lr(optimizer, running_iter, all_iters)
             imgs_A, imgs_B, labels_A, labels_B = data
-            imgs = torch.cat([imgs_A, imgs_B], 1)
             if args['gpu']:
                 imgs_A = imgs_A.cuda().float()
                 imgs_B = imgs_B.cuda().float()
@@ -132,7 +130,7 @@ def train(train_loader, net, criterion, optimizer, scheduler, train_args, val_lo
 
             curr_time = time.time() - start
 
-            if (i + 1) % train_args['print_freq'] == 0:
+            if (i + 1) % args['print_freq'] == 0:
                 print('[epoch %d] [iter %d / %d %.1fs] [lr %f] [train seg_loss %.4f bn_loss %.4f acc %.2f]' % (
                     curr_epoch, i + 1, len(train_loader), curr_time, optimizer.param_groups[0]['lr'],
                     train_seg_loss.val, train_bn_loss.val, acc_meter.val*100)) #sc_loss %.4f, train_sc_loss.val, 
@@ -141,7 +139,7 @@ def train(train_loader, net, criterion, optimizer, scheduler, train_args, val_lo
                 writer.add_scalar('train accuracy', acc_meter.val, running_iter)
                 writer.add_scalar('lr', optimizer.param_groups[0]['lr'], running_iter)
                     
-        score_v, mIoU_v, Sek_v, acc_v, loss_v = validate(val_loader, net, criterion, curr_epoch, train_args)
+        score_v, mIoU_v, Sek_v, acc_v, loss_v = validate(val_loader, net, criterion, curr_epoch)
         if acc_meter.avg>bestaccT: bestaccT=acc_meter.avg
         if score_v>bestscoreV:
             bestscoreV=score_v
@@ -152,10 +150,10 @@ def train(train_loader, net, criterion, optimizer, scheduler, train_args, val_lo
         print('Total time: %.1fs Best rec: Train acc %.2f, Val score %.2f acc %.2f loss %.4f' %(time.time()-begin_time, bestaccT*100, bestscoreV*100, bestaccV*100, bestloss))
         curr_epoch += 1
         #scheduler.step()
-        if curr_epoch >= train_args['epochs']:
+        if curr_epoch >= args['epochs']:
             return
 
-def validate(val_loader, net, criterion, curr_epoch, train_args):
+def validate(val_loader, net, criterion, curr_epoch):
     # the following code is written assuming that batch size is 1
     net.eval()
     torch.cuda.empty_cache()
@@ -168,7 +166,6 @@ def validate(val_loader, net, criterion, curr_epoch, train_args):
     labels_all = []
     for vi, data in enumerate(val_loader):
         imgs_A, imgs_B, labels_A, labels_B = data
-        imgs = torch.cat([imgs_A, imgs_B], 1)
         if args['gpu']:
             imgs_A = imgs_A.cuda().float()
             imgs_B = imgs_B.cuda().float()
