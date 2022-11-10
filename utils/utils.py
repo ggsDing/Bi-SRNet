@@ -223,8 +223,16 @@ def SCDD_eval_all(preds, labels, num_class):
     IoU_fg = iu[1]
     IoU_mean = (iu[0] + iu[1]) / 2
     Sek = (kappa_n0 * math.exp(IoU_fg)) / math.e
-    Score = 0.3*IoU_mean + 0.7*Sek
-    return Score, IoU_mean, Sek
+    
+    pixel_sum = hist.sum()
+    change_pred_sum  = pixel_sum - hist.sum(1)[0].sum()
+    change_label_sum = pixel_sum - hist.sum(0)[0].sum()
+    change_ratio = change_label_sum/pixel_sum
+    SC_TP = np.diag(hist[1:, 1:]).sum()
+    SC_Precision = SC_TP/change_pred_sum
+    SC_Recall = SC_TP/change_label_sum
+    Fscd = stats.hmean([SC_Precision, SC_Recall])
+    return Fscd, IoU_mean, Sek
 
 def SCDD_eval(pred, label, num_class):
     infer_array = np.array(pred)
@@ -246,8 +254,16 @@ def SCDD_eval(pred, label, num_class):
     IoU_fg = iu[1]
     IoU_mean = (iu[0] + iu[1]) / 2
     Sek = (kappa_n0 * math.exp(IoU_fg)) / math.e
-    Score = 0.3*IoU_mean + 0.7*Sek
-    return Score, IoU_mean, Sek
+        
+    pixel_sum = hist.sum()
+    change_pred_sum  = pixel_sum - hist.sum(1)[0].sum()
+    change_label_sum = pixel_sum - hist.sum(0)[0].sum()
+    change_ratio = change_label_sum/pixel_sum
+    SC_TP = np.diag(hist[1:, 1:]).sum()
+    SC_Precision = SC_TP/change_pred_sum
+    SC_Recall = SC_TP/change_label_sum
+    Fscd = stats.hmean([SC_Precision, SC_Recall])
+    return Fscd, IoU_mean, Sek
 
 def FWIoU(pred, label, bn_mode=False, ignore_zero=False):
     if bn_mode:
