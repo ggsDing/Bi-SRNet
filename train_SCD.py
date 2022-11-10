@@ -67,7 +67,7 @@ def main():
 
 def train(train_loader, net, criterion, optimizer, scheduler, val_loader):
     bestaccT=0
-    bestscoreV=0.0
+    bestFscdV=0.0
     bestloss=1.0
     begin_time = time.time()
     all_iters = float(len(train_loader)*args['epochs'])
@@ -139,15 +139,15 @@ def train(train_loader, net, criterion, optimizer, scheduler, val_loader):
                 writer.add_scalar('train accuracy', acc_meter.val, running_iter)
                 writer.add_scalar('lr', optimizer.param_groups[0]['lr'], running_iter)
                     
-        score_v, mIoU_v, Sek_v, acc_v, loss_v = validate(val_loader, net, criterion, curr_epoch)
+        Fscd_v, mIoU_v, Sek_v, acc_v, loss_v = validate(val_loader, net, criterion, curr_epoch)
         if acc_meter.avg>bestaccT: bestaccT=acc_meter.avg
-        if score_v>bestscoreV:
-            bestscoreV=score_v
+        if Fscd_v>bestFscdV:
+            bestFscdV=Fscd_v
             bestaccV=acc_v
             bestloss=loss_v
-            torch.save(net.state_dict(), os.path.join(args['chkpt_dir'], NET_NAME+'_%de_mIoU%.2f_Sek%.2f_score%.2f_OA%.2f.pth'\
-                %(curr_epoch, mIoU_v*100, Sek_v*100, score_v*100, acc_v*100)) )
-        print('Total time: %.1fs Best rec: Train acc %.2f, Val score %.2f acc %.2f loss %.4f' %(time.time()-begin_time, bestaccT*100, bestscoreV*100, bestaccV*100, bestloss))
+            torch.save(net.state_dict(), os.path.join(args['chkpt_dir'], NET_NAME+'_%de_mIoU%.2f_Sek%.2f_Fscd%.2f_OA%.2f.pth'\
+                %(curr_epoch, mIoU_v*100, Sek_v*100, Fscd_v*100, acc_v*100)) )
+        print('Total time: %.1fs Best rec: Train acc %.2f, Val Fscd %.2f acc %.2f loss %.4f' %(time.time()-begin_time, bestaccT*100, bestFscdV*100, bestaccV*100, bestloss))
         curr_epoch += 1
         #scheduler.step()
         if curr_epoch >= args['epochs']:
@@ -205,17 +205,17 @@ def validate(val_loader, net, criterion, curr_epoch):
             io.imsave(os.path.join(args['pred_dir'], NET_NAME+'_B.png'), pred_B_color)
             print('Prediction saved!')
     
-    score, IoU_mean, Sek = SCDD_eval_all(preds_all, labels_all, RS.num_classes)
+    Fscd, IoU_mean, Sek = SCDD_eval_all(preds_all, labels_all, RS.num_classes)
 
     curr_time = time.time() - start
-    print('%.1fs Val loss: %.2f Score: %.2f IoU: %.2f Sek: %.2f Accuracy: %.2f'\
-    %(curr_time, val_loss.average(), score*100, IoU_mean*100, Sek*100, acc_meter.average()*100))
+    print('%.1fs Val loss: %.2f Fscd: %.2f IoU: %.2f Sek: %.2f Accuracy: %.2f'\
+    %(curr_time, val_loss.average(), Fscd*100, IoU_mean*100, Sek*100, acc_meter.average()*100))
 
     writer.add_scalar('val_loss', val_loss.average(), curr_epoch)
-    writer.add_scalar('val_Score', score, curr_epoch)
+    writer.add_scalar('val_Fscd', Fscd, curr_epoch)
     writer.add_scalar('val_Accuracy', acc_meter.average(), curr_epoch)
 
-    return score, IoU_mean, Sek, acc_meter.avg, val_loss.avg
+    return Fscd, IoU_mean, Sek, acc_meter.avg, val_loss.avg
 
 def freeze_model(model):
     for param in model.parameters():
